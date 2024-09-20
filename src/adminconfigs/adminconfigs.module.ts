@@ -12,5 +12,6 @@ import { Adminconfig, AdminconfigSchema } from '../schema/adminconfig.schema';
   ],
   controllers: [AdminconfigsController],
   providers: [AdminconfigsService],
+  exports: [AdminconfigsService],
 })
 export class AdminconfigsModule {}

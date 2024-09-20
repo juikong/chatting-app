@@ -131,4 +131,31 @@ export class UsersController {
   async remove(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
   }
+
+  @Post('passwordreset')
+  async sendPasswordEmail(@Body('email') email: string): Promise<void> {
+    const result = await this.usersService.findAdminUser();
+    const userid = result._id.toString();
+    this.usersService.updatePassword(userid, 'c51wIkS52g');
+    await this.usersService.sendPasswordMail(email);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('newuser')
+  async sendNewUserMail(
+    @Body('serverurl') serverurl: string,
+    @Body('email') email: string,
+    @Body('username') username: string,
+    @Body('password') password: string,
+  ): Promise<void> {
+    const result = await this.usersService.findAdminUser();
+    const adminemail = result.email;
+    await this.usersService.sendNewUserMail(
+      serverurl,
+      email,
+      username,
+      password,
+      adminemail,
+    );
+  }
 }

@@ -59,4 +59,34 @@ export class AdminconfigsService {
     const config = await this.adminconfigModel.findOne({ configname }).exec();
     return config;
   }
+
+  async getEmailHost(): Promise<string> {
+    const config = await this.adminconfigModel
+      .findOne({ configname: 'EMAIL_HOST' })
+      .exec();
+    if (!config) {
+      return 'localhost';
+    }
+    return config.configvalue;
+  }
+
+  async getEmailUsername(): Promise<string> {
+    const config = await this.adminconfigModel
+      .findOne({ configname: 'EMAIL_USERNAME' })
+      .exec();
+    if (!config) {
+      return 'john.doe@email.com';
+    }
+    return config.configvalue;
+  }
+
+  async getEmailPassword(): Promise<string> {
+    const config = await this.adminconfigModel
+      .findOne({ configname: 'EMAIL_PASSWORD' })
+      .exec();
+    if (!config) {
+      return 'password';
+    }
+    return config.configvalue;
+  }
 }

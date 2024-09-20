@@ -2,11 +2,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../schema/user.schema';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly mailerService: MailerService,
+  ) {}
 
   async create(
     email: string,
@@ -129,5 +133,33 @@ export class UsersService {
     if (!result) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
+  }
+
+  async sendPasswordMail(to: string): Promise<void> {
+    const message = `Your password have been reset to c51wIkS52g, this is temporary password please change your account password after login`;
+
+    this.mailerService.sendMail({
+      to,
+      from: `Chat-ing Admin <"${to}">`,
+      subject: `Password Reset`,
+      text: message,
+    });
+  }
+
+  async sendNewUserMail(
+    serverurl: string,
+    to: string,
+    username: string,
+    password: string,
+    adminemail: string,
+  ): Promise<void> {
+    const message = `<!DOCTYPE html><html><head><title>New User</title></head><body>Your Chat-ing login information:-<br />Server URL: ${serverurl.substring(8)}<br />Username: ${username}<br />Password: ${password}<br /><br />Chat-ing Admin</body></html>`;
+
+    this.mailerService.sendMail({
+      to,
+      from: `Chat-ing Admin <"${adminemail}">`,
+      subject: `Chat-ing Login`,
+      html: message,
+    });
   }
 }
